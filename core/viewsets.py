@@ -108,23 +108,15 @@ class MealViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend]
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        user = self.request.user
-        return models.Meal.objects.filter(user=user)
-
     def perform_create(self, serializer):
         return serializer.save(user=self.request.user)
 
 
 class MealFoodViewSet(viewsets.ModelViewSet):
     queryset = models.MealFood.objects.all()
-    serializer_class = serializers.MealSerializer
+    serializer_class = serializers.MealFoodSerializer
     filter_backends = [DjangoFilterBackend]
     permission_classes = [IsAuthenticated]
 
-    def get_queryset(self):
-        training_id = self.request.query_params.get('training')
-        if training_id:
-            return models.TrainingExercise.objects.filter(training__id=training_id)
-        return models.TrainingExercise.objects.select_related('training').filter(training__user=self.request.user).all()
+
 

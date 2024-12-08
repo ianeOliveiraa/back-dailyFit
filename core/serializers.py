@@ -87,18 +87,28 @@ class TrainingExerciseSerializer(serializers.ModelSerializer):
         return internal_data
 
 
+class MealSerializer(serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = models.Meal
+        exclude = ['created_at', 'user']
+
+
+class FoodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.Food
+        exclude = ['created_at']
+
+
 class MealFoodSerializer(serializers.ModelSerializer):
+    meal = MealSerializer(many=False, read_only=True)
+    food = FoodSerializer(many=False, read_only=True)
+
     class Meta:
         model = models.MealFood
         exclude = ['created_at']
 
-
-class MealSerializer(serializers.ModelSerializer):
-    #date = serializers.DateField(format='%m/%d/%Y', input_formats=['%m/%d/%Y', '%Y-%m-%d'])
-
-    class Meta:
-        model = models.Meal
-        exclude = ['created_at']
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -107,7 +117,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
 
-    password = serializers.CharField(write_only=True, required=True, validators=[validate_password])
+    password = serializers.CharField(write_only=True, required=True)  # , validators=[validate_password])
 
     class Meta:
         model = User
